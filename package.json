@@ -1,0 +1,19 @@
+{
+  "name": "@poon/router",
+  "version": "1.0.0",
+  "description": "The perfect React Router w/ immense focus & fluent API that's a breeze to work with",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [
+    "react",
+    "router",
+    "navigation",
+    "tiny"
+  ],
+  "author": "James Loper",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jamesloper/poon-router"
+  }
+}
