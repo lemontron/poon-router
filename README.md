@@ -2,7 +2,7 @@
 breeze to work with: It has to be _amazing_ if it will become the de-facto standard for all React websites and the next
 generation of mobile web apps.
 
-## npm install _poon-router_
+## npm install @poon/router
 
 This is the most golfed router ever made, and it's no slouch! Poon Router is used across all my companies (one with
 multi-million dollar revenue, another with over >1M in seed funding). Poon Router's goal is to be opinionated,
