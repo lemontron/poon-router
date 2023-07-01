@@ -15,7 +15,7 @@ React app with a Home Page route, demonstrating the savage poon of Poon Router.
 ```javascript
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Stack, defineRoute } from 'poon-router';
+import { Stack, defineRoute } from '@poon/router';
 
 defineRoute('HomePage', '/', () => (
   <div>Home Page</div>
@@ -41,7 +41,7 @@ as well as modals that must appear on top of everything in the dom.
 ``` javascript
 import React, { Fragment } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Stack, defineRoute, usePath } from 'poon-router';
+import { Stack, defineRoute, usePath } from '@poon/router';
 
 defineRoute('HomePage', '/', HomePage);
 defineRoute('AdminPage', '/admin', AdminPage, 'admin');
@@ -107,7 +107,7 @@ Let's jump in to documentation by going over the most important function first.
 ## Route Definition
 
 ```javascript
-import { defineRoute } from 'poon-router';
+import { defineRoute } from '@poon/router';
 ```
 
 Some React routers have routes defined in `<Route/>` tags, but in Poon Router, routes are defined at the root level of
@@ -136,7 +136,7 @@ valid when brought forth to Poon Router:
 ## React Component: `<Stack/>`
 
 ```javascript
-import { Stack } from 'poon-router';
+import { Stack } from '@poon/router';
 
 const App = () => (
     <Stack filter="demo" mode="stack"/>
@@ -157,7 +157,7 @@ Stacks have two presentation modes:
 ## Navigation
 
 ``` javascript
-import { navigation } from 'poon-router';
+import { navigation } from '@poon/router';
 ```
 
 You can use `navigation` to navigate programmatically. There are multiple functions to facilitate navigation as follows:
@@ -211,7 +211,7 @@ const UserProfile = ({screen, isVisible, animateIn}) => {
 ## Create Link
 
 ``` javascript
-import { createLink } from 'poon-router';
+import { createLink } from '@poon/router';
 ```
 
 Returns a URL that can be navigated to. This can be useful to create a dynamic `<a>` tag, or to dynamically go to
@@ -226,7 +226,7 @@ different routes. `params` and `queryParams` are encoded within the string.
 ## Prevent Navigation
 
 ``` javascript
-import { useUnsavedChanges } from 'poon-router';
+import { useUnsavedChanges } from '@poon/router';
 ```
 
 Using this will cause navigating away from the current URL (such as clicking a link or using the back button) to be
