@@ -4,13 +4,13 @@ generation of mobile web apps.
 
 ## npm install _poon-router_
 
-This is the most golfed router ever made, and it's no slouch! Focus Router is used across all my companies (one with
-multi-million dollar revenue, another with over >1M in seed funding). Focus Router's goal is to be opinionated,
+This is the most golfed router ever made, and it's no slouch! Poon Router is used across all my companies (one with
+multi-million dollar revenue, another with over >1M in seed funding). Poon Router's goal is to be opinionated,
 thorough, and handy enough to be the #1 React Router.
 
 ## Example
 
-React app with a Home Page route, demonstrating the savage poon of Focus Router.
+React app with a Home Page route, demonstrating the savage poon of Poon Router.
 
 ```javascript
 import React from 'react';
@@ -110,9 +110,9 @@ Let's jump in to documentation by going over the most important function first.
 import { defineRoute } from 'poon-router';
 ```
 
-Some React routers have routes defined in `<Route/>` tags, but in Focus Router, routes are defined at the root level of
+Some React routers have routes defined in `<Route/>` tags, but in Poon Router, routes are defined at the root level of
 the code. You can put a bunch of these next to each other to define all the routes. You can put these at the root level,
-even in the same file as `createRoot`. Focus Router will prioritize higher routes first when matching.
+even in the same file as `createRoot`. Poon Router will prioritize higher routes first when matching.
 
 ```javascript
 defineRoute(name, path, component, type);
@@ -127,7 +127,7 @@ defineRoute(name, path, component, type);
 
 You can re-use concepts from other routers based on [path-to-regexp](https://www.npmjs.com/package/path-to-regexp) (eg:
 React Router, React Navigation and FlowRouter). Although path-to-regexp is not used, the following paths are all still
-valid when brought forth to Focus Router:
+valid when brought forth to Poon Router:
 
 - `"/blog/:postId"`
 - `"/search/:term?"`
