@@ -248,5 +248,5 @@ import {
   encodeSearchString, 
   parsePathParams,
   randomId,
-} from 'poon-router/util';
+} from '@poon/router/util.js';
 ```
