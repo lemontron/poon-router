@@ -4,7 +4,9 @@
   "description": "The perfect React Router w/ a fluent API that's a breeze to work with",
   "homepage": "https://poon.app",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "publish": "npm publish"
+  },
   "keywords": [
     "react",
     "router",
@@ -15,6 +17,10 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jamesloper/poon-router"
-  }
+    "url": "git+https://github.com/jamesloper/poon-router.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jamesloper/poon-router/issues"
+  },
+  "devDependencies": {}
 }
