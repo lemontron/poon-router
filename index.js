@@ -139,6 +139,7 @@ const RouterScreen = ({screen, i}) => {
 		'screen': screen,
 		'isVisible': i <= index,
 		'animateIn': i > 0,
+		'isTop': i === index,
 	});
 };
 

@@ -1,7 +1,8 @@
 {
-  "name": "@poon/router",
+  "name": "poon-router",
   "version": "1.0.0",
-  "description": "The perfect React Router w/ immense focus & fluent API that's a breeze to work with",
+  "description": "The perfect React Router w/ a fluent API that's a breeze to work with",
+  "homepage": "https://poon.app",
   "main": "index.js",
   "scripts": {},
   "keywords": [
