@@ -5,7 +5,7 @@
   "homepage": "https://poon.app",
   "main": "index.js",
   "scripts": {
-    "publish": "npm publish"
+    "pub": "npm version minor && npm publish"
   },
   "keywords": [
     "react",

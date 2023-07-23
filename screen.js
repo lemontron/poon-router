@@ -1,4 +1,4 @@
-import { createBus, useBus, parsePathParams, parseQueryString, randomId } from './util';
+import { createBus, parsePathParams, parseQueryString, randomId, useBus } from './util';
 
 export class Screen {
 	constructor(route, url, opts = {}) {
@@ -6,6 +6,7 @@ export class Screen {
 		this.opts = opts;
 		this.route = route; // for filter
 		this.type = route.type; // for filter
+
 		// Stores...
 		this.routeStore = createBus(route);
 		this.pathNameStore = createBus(url.pathname);

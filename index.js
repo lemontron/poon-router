@@ -1,4 +1,4 @@
-import { createElement, useEffect, memo } from 'react';
+import { createElement, memo, useEffect } from 'react';
 import { createBus, encodeSearchString, useBus } from './util';
 import { Route } from './route';
 import { Screen } from './screen';
@@ -46,9 +46,8 @@ window.onpopstate = e => {
 				stackStore.update([newScreen, ...stackStore.state]);
 				indexStore.update(0);
 			} else { // add to end of stack
-				console.log(`add ${route.path} to end of stack, rebuilding stack in process`, newIndex);
+				console.log(`add ${route.path} to end of stack`);
 				stackStore.update([...stackStore.state.slice(0, indexStore.state + 1), newScreen]);
-				// console.log('NEW STACK:', stackStore.state, 'Index:', stackStore.state.length - 1);
 				indexStore.update(stackStore.state.length - 1);
 			}
 		}
@@ -72,8 +71,7 @@ const navigate = (to, opts = {}) => {
 		screen.setRoute(route, url); // update existing screen
 		history.replaceState(Date.now(), null, to);
 	} else {
-		if (route === screen.route && screen.pathname === url.pathname) {
-			console.log('replace state:', to);
+		if (route === screen.route && screen.pathNameStore.state === url.pathname) {
 			screen.setRoute(route, url); // Update existing screen
 		} else { // Add new screen to stack
 			stackStore.update([
@@ -163,7 +161,7 @@ export const useStack = () => {
 export const Stack = memo(({filter = 'main', mode = 'stack'}) => {
 	const index = useBus(indexStore);
 	const stack = useBus(stackStore);
-	const props = {'className': 'stack', 'data-filter': filter}; // Wrapper div props
+	// const props = {'className': 'stack', 'data-filter': filter}; // Wrapper div props
 
 	const filteredStack = stack.filter(screen => screen.type === filter);
 	if (filteredStack.length === 0) return null;
@@ -176,11 +174,11 @@ export const Stack = memo(({filter = 'main', mode = 'stack'}) => {
 	};
 
 	// Render all screens
-	if (mode === 'stack') return createElement('div', props, stack.map(renderScreen));
+	if (mode === 'stack') return stack.map(renderScreen);
 
 	// Render only the top screen
 	const screen = stack[index];
-	return screen ? createElement('div', props, renderScreen(screen, 0)) : null;
+	return screen ? renderScreen(screen, 0) : null;
 });
 
 // Initialize the link handler
