@@ -1,5 +1,10 @@
 import { createBus, parsePathParams, parseQueryString, randomId, useBus } from './util';
 
+const parseParam = (p, key, fallback) => {
+	if (typeof fallback === 'function') return fallback(p[key]);
+	return (key in p) ? p[key] : fallback;
+};
+
 export class Screen {
 	constructor(route, url, opts = {}) {
 		this.key = route.name + '-' + randomId();
@@ -15,14 +20,14 @@ export class Screen {
 		this.queryParamStore = createBus(parseQueryString(url.search));
 	}
 
-	useParam = (key, defaultValue) => {
+	useParam = (key, fallback) => {
 		const p = useBus(this.paramStore);
-		return (key in p) ? p[key] : defaultValue;
+		return parseParam(p, key, fallback);
 	};
 
-	useQueryParam = (key, defaultValue) => {
+	useQueryParam = (key, fallback) => {
 		const p = useBus(this.queryParamStore);
-		return (key in p) ? p[key] : defaultValue;
+		return parseParam(p, key, fallback);
 	};
 
 	useRouteName = () => {
