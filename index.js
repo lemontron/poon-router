@@ -161,7 +161,6 @@ export const useStack = () => {
 export const Stack = memo(({filter = 'main', mode = 'stack'}) => {
 	const index = useBus(indexStore);
 	const stack = useBus(stackStore);
-	// const props = {'className': 'stack', 'data-filter': filter}; // Wrapper div props
 
 	const filteredStack = stack.filter(screen => screen.type === filter);
 	if (filteredStack.length === 0) return null;

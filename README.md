@@ -1,6 +1,5 @@
-🚨 **HEYO!** - This code is no hack job; this is a well-thought-out router with immense poon and a fluent API that is a
-breeze to work with: It has to be _amazing_ if it will become the de-facto standard for all React websites and the next
-generation of mobile web apps.
+🚨 **HEY!** This code is NO hack job; It's a well-thought-out router with a fluent API that is a
+breeze to work with and is intended to become the de-facto standard for all React websites.
 
 ## npm install poon-router
 
@@ -10,7 +9,7 @@ thorough, and handy enough to be the #1 React Router.
 
 ## Example
 
-React app with a Home Page route, demonstrating the savage poon of Poon Router.
+React app with a Home Page route, demonstrating the savage focus of Poon Router.
 
 ```javascript
 import React from 'react';
@@ -25,7 +24,7 @@ createRoot(document.getElementById('root')).render(<Stack/>);
 ```
 
 Aside from simplicity, Poon Router has a fuller feature set
-than [React Router](https://www.npmjs.com/package/react-router) (55 KB) which suffers from a lack of poon, which is why
+than [React Router](https://www.npmjs.com/package/react-router) (55 KB) which suffers from a lack of focus, which is why
 this router exists!
 
 1. No need to use `<Link/>`. Just use plain `<a>`tags
@@ -33,72 +32,8 @@ this router exists!
 3. Can disable navigation with `useUnsavedChanges()`
 4. Minimal re-renders and maximum micro-optimization
 
-## A complete example
-
-This is a much more likely use case. In it we are using multiple stacks because we have several different route types,
-as well as modals that must appear on top of everything in the dom.
-
-``` javascript
-import React, { Fragment } from 'react';
-import { createRoot } from 'react-dom/client';
-import { Stack, defineRoute, usePath } from 'poon-router';
-
-defineRoute('HomePage', '/', HomePage);
-defineRoute('AdminPage', '/admin', AdminPage, 'admin');
-defineRoute('AppPage', '/app', AppPage, 'app');
-defineRoute('Settings', '/settings', SettingsModal, 'modal');
-
-
-const App = () => {
-  const path = usePath();
-  const {loggedIn, loggingIn} = useUserStatus(); // some custom hook
-
-  const renderBody = () => {
-    if (loggingIn) return <SplashScreen/>;
-    if (path.startsWith('/app')) {
-      if (!loggedIn) return <Login/>;
-      return <Stack filter="app"/>;
-    }
-    if (path.startsWith('/admin')) {
-      if (!loggedIn) return <Login/>;
-      return <Stack filter="admin" mode="screen"/>;
-    }
-    return <Stack/>;
-  };
-
-  return (
-    <Fragment>
-      {renderBody()}
-      <Stack filter="modal"/>
-    </Fragment>
-  );
-};
-
-```
-
-Wow! A lot going on... Let's break it down. This is not a contrived example, it's a real world example, so I'll explain
-what's going on.
-
-There are several Stack components in use here, and that is to control where each stack is placed in the dom. You don't
-want modals appearing in the same z-index as the screens.
-
-Since my admin routes start with "/admin" I do a check to see if the path starts with "/admin" and if so, I render a
-stack with a filter of "admin". This means that only routes with a type of "admin" will be rendered in this stack. I
-also set the mode to "screen" which means that only one screen will be rendered at a time.
-
-The webapp (in contrast with the HomePage) is located at '/app', so I do a similar check for that. I also check if the
-user is logged in, and if not, I render a login screen. If the user is logged in, I render a stack with a filter of "
-app" and a mode of "stack". This means that multiple screens will be rendered at a time, and only screens with a type
-of "app" will be rendered.
-
-If the user is not on a specially handled route, I render a stack with no filter. This stack will contain all the routes
-that have no type specified.
-
-Finally, I render a stack with a filter of "modal". This means that only routes with a type of "modal" will be rendered
-in this stack.
-
 Since there is no CSS yet, you'll quickly realize the stack contents are *ahem* stacking vertically by default, which is
-obviously where your CSS skills come in.
+obviously where poon-ui comes in.
 
 # Documentation
 
