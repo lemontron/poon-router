@@ -1,4 +1,4 @@
-🚨 **HEY!** This code is NO hack job; It's a well-thought-out router with a fluent API that is a
+🚨 **HEYO!** This code is NO hack job; It's a well-thought-out router with a fluent API that is a
 breeze to work with and is intended to become the de-facto standard for all React websites.
 
 ## npm install poon-router
@@ -31,9 +31,6 @@ this router exists!
 2. Swap `useState()` for `screen.useParam()` or `screen.useQueryParam()` to use a browser history-backed global state
 3. Can disable navigation with `useUnsavedChanges()`
 4. Minimal re-renders and maximum micro-optimization
-
-Since there is no CSS yet, you'll quickly realize the stack contents are *ahem* stacking vertically by default, which is
-obviously where poon-ui comes in.
 
 # Documentation
 
@@ -87,7 +84,10 @@ Stacks have two presentation modes:
 - `screen` is your basic bog standard router, it will render only one screen at a time. This is what you typically think
   of in a router.
 - `stack` (default) on the other hand is more like a mobile app, where you can navigate to a new screen, and the old
-  screen will stay in the background. This is useful for building full blown apps with animations.
+  screen will stay in the DOM. This is useful for building full blown apps with animations.
+
+When you use Stack, the stack contents will just append to the bottom of the current content, which is because we expect
+some sort of framework like Poon-UI.
 
 ## Navigation
 
