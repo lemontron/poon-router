@@ -32,8 +32,7 @@ window.onpopstate = e => {
 	const route = routes.find(route => route.test(location.pathname));
 	const currentScreen = getTopScreen();
 
-	if (currentScreen.route === route && currentScreen.pathname === location.pathname) { // try to stay on existing screen first
-		console.log('update route:', location.pathname);
+	if (currentScreen.route === route && currentScreen.pathNameStore.state === location.pathname) { // try to stay on existing screen first		console.log('update route:', location.pathname);
 		currentScreen.setRoute(route, location);
 	} else { // change state index
 		const newIndex = (indexStore.state + dir);
