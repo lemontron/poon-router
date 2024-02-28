@@ -43,8 +43,8 @@ import { defineRoute } from 'poon-router';
 ```
 
 Some React routers have routes defined in `<Route/>` tags, but in Poon Router, routes are defined at the root level of
-the code. You can put a bunch of these next to each other to define all the routes. You can put these at the root level,
-even in the same file as `createRoot`. Poon Router will prioritize higher routes first when matching.
+the code. You can put a bunch of these next to each other to define all the routes. Poon Router will prioritize higher
+routes first when matching.
 
 ```javascript
 defineRoute(name, path, component, type);
@@ -61,9 +61,9 @@ You can re-use concepts from other routers based on [path-to-regexp](https://www
 React Router, React Navigation and FlowRouter). Although path-to-regexp is not used, the following paths are all still
 valid when brought forth to Poon Router:
 
-- `"/blog/:postId"`
-- `"/search/:term?"`
-- `"*"`
+- `"/blog/:postId"` (matches /blog/post_24764)
+- `"/search/:term?"` (matches /search or /search/poon)
+- `"*"` (matches any url)
 
 ## React Component: `<Stack/>`
 
