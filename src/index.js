@@ -2,6 +2,7 @@ import { createElement, memo, useEffect } from 'react';
 import { createBus, encodeSearchString, useBus } from './util';
 import { Route } from './route';
 import { Screen } from './screen';
+export * from './util';
 
 let canNavigate = true; // Internal flag to prevent navigation
 let ts = history.state || Date.now(); // Used to detect back/forward
@@ -38,6 +39,7 @@ window.onpopstate = e => {
 	} else { // change state index
 		const newIndex = (indexStore.state + dir);
 		if (stackStore.state[newIndex]) { // user is just going back to a previous screen
+			// console.log('change index to', newIndex);
 			indexStore.update(newIndex);
 		} else {
 			const newScreen = new Screen(route, location);
@@ -58,7 +60,7 @@ history.ts = ts; // Used to detect back/forward
 if (!history.state) history.replaceState(history.ts, null);
 
 // Navigation primitive used by all navigation functions
-const navigate = (to, opts = {}) => {
+const navigate = (to = '/', opts = {}) => {
 	if (!canNavigate) return;
 	opts = {'replaceState': false, 'scrollToTop': true, ...opts}; // Set defaults for opts
 
@@ -67,24 +69,32 @@ const navigate = (to, opts = {}) => {
 	if (!route) return console.log('No route matches the target', url.href);
 	const screen = getTopScreen();
 
-	if (opts.replaceState) {
-		screen.setRoute(route, url); // update existing screen
-		history.replaceState(Date.now(), null, to);
+	// detect updating existing screen
+	if (route === screen.route && screen.pathNameStore.state === url.pathname) {
+		screen.setRoute(route, url); // Update existing screen
 	} else {
-		if (route === screen.route && screen.pathNameStore.state === url.pathname) {
-			screen.setRoute(route, url); // Update existing screen
-		} else { // Add new screen to stack
+		if (opts.replaceState) {
+			// insert at index of current screen, moving everything after it
+			stackStore.update([
+				...stackStore.state.slice(0, indexStore.state),
+				new Screen(route, url, opts),
+				...stackStore.state.slice(indexStore.state),
+			]);
+			history.replaceState(Date.now(), null, to);
+		} else {
+			// Add new screen to stack
 			stackStore.update([
 				...stackStore.state.slice(0, indexStore.state + 1),
 				new Screen(route, url, opts),
 			]);
 			indexStore.update(indexStore.state + 1);
-		}
 
-		history.pushState(Date.now(), null, to); // Update history
+			history.pushState(Date.now(), null, to); // Update history
+			history.ts = Date.now();
+		}
 	}
+
 	if (opts.scrollToTop) setTimeout(() => scrollTo(0, 0), 0);
-	history.ts = Date.now();
 };
 
 export const createLink = (routeName, params, queryParams) => {
@@ -123,6 +133,10 @@ export const navigation = {
 		const screen = getTopScreen();
 		navigate(location.pathname + encodeSearchString({...screen.queryParamStore.state, ...params}), opts);
 	},
+	goUp() {
+		const target = location.pathname.split('/').slice(0, -1).join('/') || '/';
+		navigate(target, {'replaceState': true, 'scrollToTop': true});
+	},
 	goBack(steps = 1) {
 		if (!canNavigate) return;
 		history.go(steps * -1);
@@ -130,7 +144,7 @@ export const navigation = {
 };
 
 // Rendering helper
-const RouterScreen = ({screen, i}) => {
+const RouterScreen = ({screen, i, props}) => {
 	const route = useBus(screen.routeStore);
 	const index = useBus(indexStore);
 	return createElement(route.component, {
@@ -138,6 +152,7 @@ const RouterScreen = ({screen, i}) => {
 		'isVisible': i <= index,
 		'animateIn': i > 0,
 		'isTop': i === index,
+		...props,
 	});
 };
 
@@ -158,18 +173,18 @@ export const useStack = () => {
 	return stack.slice(0, index + 1);
 };
 
-export const Stack = memo(({filter = 'main', mode = 'stack'}) => {
+export const Stack = memo(({filter = 'main', mode = 'stack', ...props}) => {
 	const index = useBus(indexStore);
 	const stack = useBus(stackStore);
 
 	const filteredStack = stack.filter(screen => screen.type === filter);
 	if (filteredStack.length === 0) return null;
 
-	console.log(filter, filteredStack); // debug
+	// console.log(filter, filteredStack); // debug
 
 	const renderScreen = (screen, i) => {
 		if (screen.type !== filter) return null;
-		return createElement(RouterScreen, {key: screen.key, screen, i});
+		return createElement(RouterScreen, {key: screen.key, screen, i, props});
 	};
 
 	// Render all screens

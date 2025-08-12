@@ -183,5 +183,5 @@ import {
   encodeSearchString, 
   parsePathParams,
   randomId,
-} from 'poon-router/util.js';
+} from 'poon-router';
 ```
