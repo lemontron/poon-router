@@ -29,10 +29,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jamesloper/poon-router.git"
-  },
-  "bugs": {
-    "url": "https://github.com/jamesloper/poon-router/issues"
+    "url": "git+https://github.com/lemontron/poon-router.git"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^29.0.2",
