@@ -2,6 +2,7 @@ import { createElement, memo, useEffect } from 'react';
 import { createBus, encodeSearchString, useBus } from './util';
 import { Route } from './route';
 import { Screen } from './screen';
+
 export * from './util';
 
 let canNavigate = true; // Internal flag to prevent navigation
@@ -69,11 +70,15 @@ const navigate = (to = '/', opts = {}) => {
 	if (!route) return console.log('No route matches the target', url.href);
 	const screen = getTopScreen();
 
+	console.log('navigate:', route.name);
+
 	// detect updating existing screen
 	if (route === screen.route && screen.pathNameStore.state === url.pathname) {
+		console.log('> changing state of top screen');
 		screen.setRoute(route, url); // Update existing screen
 	} else {
 		if (opts.replaceState) {
+			console.log('> replacing state of top screen');
 			// insert at index of current screen, moving everything after it
 			stackStore.update([
 				...stackStore.state.slice(0, indexStore.state),
@@ -82,12 +87,21 @@ const navigate = (to = '/', opts = {}) => {
 			]);
 			history.replaceState(Date.now(), null, to);
 		} else {
-			// Add new screen to stack
-			stackStore.update([
-				...stackStore.state.slice(0, indexStore.state + 1),
-				new Screen(route, url, opts),
-			]);
-			indexStore.update(indexStore.state + 1);
+			const iExisting = stackStore.state.findIndex(screen => {
+				if (Object.keys(screen.queryParamStore.state).length) return; // Query params invalidate going "back"
+				return (screen.pathStore.state === url.pathname);
+			});
+			if (iExisting > -1) { // Just roll back the index
+				console.log('> rolling back index');
+				indexStore.update(iExisting);
+			} else { // Add new screen to stack
+				console.log('> adding new screen to stack');
+				stackStore.update([
+					...stackStore.state.slice(0, indexStore.state + 1),
+					new Screen(route, url, opts),
+				]);
+				indexStore.update(indexStore.state + 1);
+			}
 
 			history.pushState(Date.now(), null, to); // Update history
 			history.ts = Date.now();
@@ -150,8 +164,7 @@ const RouterScreen = ({screen, i, props}) => {
 	return createElement(route.component, {
 		'screen': screen,
 		'isVisible': i <= index,
-		'animateIn': i > 0,
-		'isTop': i === index,
+		'animateIn': i === index ? i > 0 : false,
 		...props,
 	});
 };
