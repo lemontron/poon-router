@@ -40,7 +40,7 @@ window.onpopstate = e => {
 	} else { // change state index
 		const newIndex = (indexStore.state + dir);
 		if (stackStore.state[newIndex]) { // user is just going back to a previous screen
-			// console.log('change index to', newIndex);
+			stackStore.state[newIndex].setSearch(location);
 			indexStore.update(newIndex);
 		} else {
 			const newScreen = new Screen(route, location);
@@ -93,6 +93,7 @@ const navigate = (to = '/', opts = {}) => {
 			});
 			if (iExisting > -1) { // Just roll back the index
 				console.log('> rolling back index');
+				stackStore.state[iExisting].setSearch(url);
 				indexStore.update(iExisting);
 			} else { // Add new screen to stack
 				console.log('> adding new screen to stack');

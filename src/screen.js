@@ -38,11 +38,15 @@ export class Screen {
 		return useBus(this.pathStore);
 	};
 
+	setSearch(url) {
+		this.pathStore.update(url.pathname + url.search);
+		this.queryParamStore.update(parseQueryString(url.search));
+	}
+
 	setRoute(route, url) {
 		this.routeStore.update(route);
 		this.pathNameStore.update(url.pathname);
-		this.pathStore.update(url.pathname + url.search);
+		this.setSearch(url);
 		this.paramStore.update(parsePathParams(route, url.pathname));
-		this.queryParamStore.update(parseQueryString(url.search));
 	}
 }
