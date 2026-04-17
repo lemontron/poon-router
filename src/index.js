@@ -208,17 +208,3 @@ export const Stack = memo(({filter = 'main', mode = 'stack', ...props}) => {
 	const screen = stack[index];
 	return screen ? renderScreen(screen, 0) : null;
 });
-
-// Initialize the link handler, but ignore links with _blank target and API links
-document.addEventListener('click', e => {
-	if (e.metaKey || e.ctrlKey || e.defaultPrevented) return;
-
-	const link = e.composedPath().find(el => el.tagName === 'A');
-	if (link) {
-		if (link.target === '_blank' || link.pathname.startsWith('/api/')) return;
-		if (link.hostname === location.hostname) {
-			e.preventDefault();
-			navigate(link.href);
-		}
-	}
-});
