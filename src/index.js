@@ -7,9 +7,11 @@ export * from './util';
 
 let canNavigate = true; // Internal flag to prevent navigation
 let ts = history.state || Date.now(); // Used to detect back/forward
+let restorePopstate = false;
 
 const stackStore = createBus([]);
 const indexStore = createBus(0);
+const backHandlers = [];
 const routes = []; // Definitions stored here
 
 export const defineRoute = (name, path, component, type = 'main') => {
@@ -26,10 +28,27 @@ export const defineRoute = (name, path, component, type = 'main') => {
 // Gets screen on the top of the stack
 const getTopScreen = () => stackStore.state[indexStore.state];
 
+const handleBack = () => {
+	if (backHandlers.length === 0) return false;
+	backHandlers[backHandlers.length - 1]();
+	return true;
+};
+
 // User navigates with the browser (out of our control)
 window.onpopstate = e => {
 	const dir = Math.sign(history.state - history.ts);
 	history.ts = history.state; // sync
+
+	if (restorePopstate) {
+		restorePopstate = false;
+		return;
+	}
+
+	if (dir < 0 && handleBack()) {
+		restorePopstate = true;
+		history.go(1);
+		return;
+	}
 
 	const route = routes.find(route => route.test(location.pathname));
 	const currentScreen = getTopScreen();
@@ -134,6 +153,17 @@ export const useUnsavedChanges = (active, callback) => {
 	}, [active]);
 };
 
+export const useBackHandler = (active, callback) => {
+	useEffect(() => {
+		if (!active) return;
+		backHandlers.push(callback);
+		return () => {
+			const i = backHandlers.indexOf(callback);
+			if (i > -1) backHandlers.splice(i, 1);
+		};
+	}, [active, callback]);
+};
+
 // Navigation events always apply to the top screen
 export const navigation = {
 	go(target, params = {}, queryParams = {}, opts = {}) {
@@ -154,6 +184,7 @@ export const navigation = {
 	},
 	goBack(steps = 1) {
 		if (!canNavigate) return;
+		if (steps === 1 && handleBack()) return;
 		history.go(steps * -1);
 	},
 };
@@ -170,9 +201,11 @@ const RouterScreen = ({screen, i, props}) => {
 	});
 };
 
-export const usePath = () => {
+export const usePath = (i) => {
 	const screen = useScreen();
-	return useBus(screen.pathStore);
+	const path = useBus(screen.pathStore);
+	if (i) return path.split('/').filter(Boolean).slice(0, i);
+	return path;
 };
 
 export const useScreen = () => {

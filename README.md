@@ -171,6 +171,19 @@ ignored. When the stack is empty, the browser's native Save Changes modal will b
 |----------|----------------------|----------------------------|
 | `active` | Boolean *(Optional)* | Turns the effect on or off |
 
+## Handle Back
+
+``` javascript
+import { useBackHandler } from 'poon-router';
+```
+
+Register a callback that should run before normal one-step back navigation. This is useful for transient UI like alerts,
+menus, and sheets that should close when the user presses the browser or app back button.
+
+``` javascript
+useBackHandler(isOpen, close);
+```
+
 ## Bonus Utils
 
 These handy utils are there if you need them, only because poon router needs them internally.
