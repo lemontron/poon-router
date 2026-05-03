@@ -91,20 +91,31 @@ const navigate = (to = '/', opts = {}) => {
 
 	console.log('navigate:', route.name);
 
-	// detect updating existing screen
-	if (route === screen.route && screen.pathNameStore.state === url.pathname) {
+	if (opts.replaceState && route === screen.route) {
+		console.log('> replacing state of top screen');
+		const nextState = Date.now();
+		screen.opts = opts;
+		screen.setRoute(route, url);
+		stackStore.update([
+			...stackStore.state.slice(0, indexStore.state),
+			screen,
+		]);
+		history.replaceState(nextState, null, to);
+		history.ts = nextState;
+	} else if (route === screen.route && screen.pathNameStore.state === url.pathname) { // detect updating existing screen
 		console.log('> changing state of top screen');
+		screen.opts = opts;
 		screen.setRoute(route, url); // Update existing screen
 	} else {
 		if (opts.replaceState) {
 			console.log('> replacing state of top screen');
-			// insert at index of current screen, moving everything after it
+			const nextState = Date.now();
 			stackStore.update([
 				...stackStore.state.slice(0, indexStore.state),
 				new Screen(route, url, opts),
-				...stackStore.state.slice(indexStore.state),
 			]);
-			history.replaceState(Date.now(), null, to);
+			history.replaceState(nextState, null, to);
+			history.ts = nextState;
 		} else {
 			const iExisting = stackStore.state.findIndex(screen => {
 				if (Object.keys(screen.queryParamStore.state).length) return; // Query params invalidate going "back"
