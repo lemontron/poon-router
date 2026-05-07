@@ -117,14 +117,14 @@ const navigate = (to = '/', opts = {}) => {
 			history.replaceState(nextState, null, to);
 			history.ts = nextState;
 		} else {
-			const iExisting = stackStore.state.findIndex(screen => {
+			const iExisting = stackStore.state.findIndex(screen => { // new route matches route in stack
 				if (Object.keys(screen.queryParamStore.state).length) return; // Query params invalidate going "back"
 				return (screen.pathStore.state === url.pathname);
 			});
-			if (iExisting > -1) { // Just roll back the index
-				console.log('> rolling back index');
-				stackStore.state[iExisting].setSearch(url);
-				indexStore.update(iExisting);
+			if (iExisting > -1) { // let goBack handle the state change
+				console.log('> navigating backwards');
+				stackStore.state[iExisting].setSearch(url); // can modify search params even in a back move
+				navigation.goBack(indexStore.state - iExisting);
 			} else { // Add new screen to stack
 				console.log('> adding new screen to stack');
 				stackStore.update([
@@ -238,7 +238,7 @@ export const Stack = memo(({filter = 'main', mode = 'stack', ...props}) => {
 	const filteredStack = stack.filter(screen => screen.type === filter);
 	if (filteredStack.length === 0) return null;
 
-	// console.log(filter, filteredStack); // debug
+	console.log(filteredStack.map(r => r.key)); // debug
 
 	const renderScreen = (screen, i) => {
 		if (screen.type !== filter) return null;
