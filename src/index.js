@@ -11,7 +11,7 @@ let restorePopstate = false;
 
 const stackStore = createBus([]);
 const indexStore = createBus(0);
-const backHandlers = [];
+const backHandlers = []; // Registry of back handlers
 const routes = []; // Definitions stored here
 
 export const defineRoute = (name, path, component, type = 'main') => {
@@ -36,7 +36,7 @@ const handleBack = () => {
 
 // User navigates with the browser (out of our control)
 window.onpopstate = e => {
-	const dir = Math.sign(history.state - history.ts);
+	const dir = Math.sign(history.state - history.ts); // this is the only way to detect which direction, lol!!!
 	history.ts = history.state; // sync
 
 	if (restorePopstate) {
@@ -44,6 +44,7 @@ window.onpopstate = e => {
 		return;
 	}
 
+	// Back handlers take precedence over route changes
 	if (dir < 0 && handleBack()) {
 		restorePopstate = true;
 		history.go(1);
@@ -167,6 +168,7 @@ export const useUnsavedChanges = (active, callback) => {
 	}, [active]);
 };
 
+// When active, registers a back handler callback, and uses pushState to immediately restore location
 export const useBackHandler = (active, callback) => {
 	useEffect(() => {
 		if (!active) return;
@@ -198,7 +200,16 @@ export const navigation = {
 	},
 	goBack(steps = 1) {
 		if (!canNavigate) return;
+
+		// Detect when there's no history to go back in
+		// Probably from a push notification, can be tested with:
+		// open "http://localhost:3000/todo/QjQjd6xkjgFXcb9QF"
+		if (history.length === 1) return navigation.goUp();
+
+		// This is an optimization to handle the backHandlers instead of in popstate
 		if (steps === 1 && handleBack()) return;
+
+		// Finally, allow the actual back event
 		history.go(steps * -1);
 	},
 };
