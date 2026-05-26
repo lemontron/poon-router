@@ -1,5 +1,7 @@
 import { split } from './util';
 
+const paramKey = pattern => pattern.slice(1, pattern.endsWith('?') ? -1 : Infinity);
+
 export class Route {
 	constructor(name, path, component, type) {
 		this.patterns = split(path);
@@ -31,8 +33,12 @@ export class Route {
 		});
 	};
 
-	createPath = (params = {}) => '/' + this.patterns.map(pattern => {
-		if (pattern.startsWith(':')) return params[pattern.slice(1)];
+	createPath = (params = {}) => '/' + this.patterns.flatMap(pattern => {
+		if (pattern.startsWith(':')) {
+			const value = params[paramKey(pattern)];
+			if (value === undefined && pattern.endsWith('?')) return [];
+			return value;
+		}
 		return pattern;
 	}).join('/');
 }
