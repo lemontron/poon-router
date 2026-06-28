@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 
-export const randomId = () => (Math.random() + 1).toString(36).substring(2);
 export const split = path => path.split('/').filter(Boolean);
 
 export const parseQueryString = str => {

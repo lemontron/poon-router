@@ -1,4 +1,5 @@
-import { createBus, parsePathParams, parseQueryString, randomId, useBus } from './util';
+import { createBus, parsePathParams, parseQueryString, useBus } from './util';
+import { Random } from 'meteor/random';
 
 const parseParam = (p, key, fallback) => {
 	if (typeof fallback === 'function') return fallback(p[key]);
@@ -7,7 +8,7 @@ const parseParam = (p, key, fallback) => {
 
 export class Screen {
 	constructor(route, url, opts = {}) {
-		this.key = route.name + '-' + randomId();
+		this.key = route.name + '-' + Random.id();
 		this.opts = opts;
 		this.route = route; // for filter
 		this.type = route.type; // for filter

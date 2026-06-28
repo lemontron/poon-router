@@ -14,7 +14,7 @@ React app with a Home Page route, demonstrating the savage focus of Poon Router.
 ```javascript
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Stack, defineRoute } from 'poon-router';
+import { Stack, defineRoute } from 'meteor/poon-router';
 
 defineRoute('HomePage', '/', () => (
   <div>Home Page</div>
@@ -39,7 +39,7 @@ Let's jump in to documentation by going over the most important function first.
 ## Route Definition
 
 ```javascript
-import { defineRoute } from 'poon-router';
+import { defineRoute } from 'meteor/poon-router';
 ```
 
 Some React routers have routes defined in `<Route/>` tags, but in Poon Router, routes are defined at the root level of
@@ -68,7 +68,7 @@ valid when brought forth to Poon Router:
 ## React Component: `<Stack/>`
 
 ```javascript
-import { Stack } from 'poon-router';
+import { Stack } from 'meteor/poon-router';
 
 const App = () => (
     <Stack filter="demo" mode="stack"/>
@@ -92,7 +92,7 @@ some sort of framework like Poon-UI.
 ## Navigation
 
 ``` javascript
-import { navigation } from 'poon-router';
+import { navigation } from 'meteor/poon-router';
 ```
 
 You can use `navigation` to navigate programmatically. There are multiple functions to facilitate navigation as follows:
@@ -146,7 +146,7 @@ const UserProfile = ({screen, isVisible, animateIn}) => {
 ## Create Link
 
 ``` javascript
-import { createLink } from 'poon-router';
+import { createLink } from 'meteor/poon-router';
 ```
 
 Returns a URL that can be navigated to. This can be useful to create a dynamic `<a>` tag, or to dynamically go to
@@ -161,7 +161,7 @@ different routes. `params` and `queryParams` are encoded within the string.
 ## Prevent Navigation
 
 ``` javascript
-import { useUnsavedChanges } from 'poon-router';
+import { useUnsavedChanges } from 'meteor/poon-router';
 ```
 
 Using this will cause navigating away from the current URL (such as clicking a link or using the back button) to be
@@ -174,7 +174,7 @@ ignored. When the stack is empty, the browser's native Save Changes modal will b
 ## Handle Back
 
 ``` javascript
-import { useBackHandler } from 'poon-router';
+import { useBackHandler } from 'meteor/poon-router';
 ```
 
 Register a callback that should run before normal one-step back navigation. This is useful for transient UI like alerts,
@@ -195,6 +195,5 @@ import {
   encodeQueryString, 
   encodeSearchString, 
   parsePathParams,
-  randomId,
-} from 'poon-router';
+} from 'meteor/poon-router';
 ```
