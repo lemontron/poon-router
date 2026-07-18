@@ -9,6 +9,8 @@ let canNavigate = true; // Internal flag to prevent navigation
 let ts = history.state || Date.now(); // Used to detect back/forward
 let restorePopstate = false;
 
+history.scrollRestoration = 'manual';
+
 const stackStore = createBus([]);
 const indexStore = createBus(0);
 const backHandlers = []; // Registry of back handlers
@@ -35,7 +37,7 @@ const handleBack = () => {
 };
 
 // User navigates with the browser (out of our control)
-window.onpopstate = e => {
+window.onpopstate = () => {
 	const dir = Math.sign(history.state - history.ts); // this is the only way to detect which direction, lol!!!
 	history.ts = history.state; // sync
 
@@ -152,7 +154,7 @@ export const createLink = (routeName, params, queryParams) => {
 	return route.createPath(params) + encodeSearchString(queryParams);
 };
 
-export const useUnsavedChanges = (active, callback) => {
+export const useUnsavedChanges = (active) => {
 	useEffect(() => {
 		const preventDefault = e => {
 			e.preventDefault();
@@ -201,10 +203,12 @@ export const navigation = {
 	goBack(steps = 1) {
 		if (!canNavigate) return;
 
+		// console.log('[goBack]', 'indexStore=', indexStore.state, 'history.length=', history.length);
+
 		// Detect when there's no history to go back in
 		// Probably from a push notification, can be tested with:
 		// open "http://localhost:3000/todo/QjQjd6xkjgFXcb9QF"
-		if (history.length === 1) return navigation.goUp();
+		if (history.length === 1 || indexStore.state === 0) return navigation.goUp();
 
 		// This is an optimization to handle the backHandlers instead of in popstate
 		if (steps === 1 && handleBack()) return;
