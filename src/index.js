@@ -38,8 +38,8 @@ const handleBack = () => {
 
 // User navigates with the browser (out of our control)
 window.onpopstate = () => {
-	const dir = Math.sign(history.state - history.ts); // this is the only way to detect which direction, lol!!!
-	history.ts = history.state; // sync
+	const dir = Math.sign(history.state - ts); // this is the only way to detect which direction, lol!!!
+	ts = history.state; // sync
 
 	if (restorePopstate) {
 		restorePopstate = false;
@@ -79,8 +79,7 @@ window.onpopstate = () => {
 	}
 };
 
-history.ts = ts; // Used to detect back/forward
-if (!history.state) history.replaceState(history.ts, null);
+if (!history.state) history.replaceState(ts, null);
 
 // Navigation primitive used by all navigation functions
 const navigate = (to = '/', opts = {}) => {
@@ -96,15 +95,13 @@ const navigate = (to = '/', opts = {}) => {
 
 	if (opts.replaceState && route === screen.route) {
 		console.log('> replacing state of top screen');
-		const nextState = Date.now();
 		screen.opts = opts;
 		screen.setRoute(route, url);
 		stackStore.update([
 			...stackStore.state.slice(0, indexStore.state),
 			screen,
 		]);
-		history.replaceState(nextState, null, to);
-		history.ts = nextState;
+		history.replaceState(ts, null, to);
 	} else if (route === screen.route && screen.pathNameStore.state === url.pathname) { // detect updating existing screen
 		console.log('> changing state of top screen');
 		screen.opts = opts;
@@ -112,13 +109,11 @@ const navigate = (to = '/', opts = {}) => {
 	} else {
 		if (opts.replaceState) {
 			console.log('> replacing state of top screen');
-			const nextState = Date.now();
 			stackStore.update([
 				...stackStore.state.slice(0, indexStore.state),
 				new Screen(route, url, opts),
 			]);
-			history.replaceState(nextState, null, to);
-			history.ts = nextState;
+			history.replaceState(ts, null, to);
 		} else {
 			const iExisting = stackStore.state.findIndex(screen => { // new route matches route in stack
 				if (Object.keys(screen.queryParamStore.state).length) return; // Query params invalidate going "back"
@@ -140,8 +135,8 @@ const navigate = (to = '/', opts = {}) => {
 				indexStore.update(indexStore.state + 1);
 			}
 
-			history.pushState(Date.now(), null, to); // Update history
-			history.ts = Date.now();
+			ts = Date.now();
+			history.pushState(ts, null, to); // Update history
 		}
 	}
 
