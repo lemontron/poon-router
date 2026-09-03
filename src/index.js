@@ -81,6 +81,10 @@ window.onpopstate = () => {
 
 if (!history.state) history.replaceState(ts, null);
 
+stackStore.on(stack => {
+	console.log('STACK:', stack.map(r => r.pathNameStore.state));
+});
+
 // Navigation primitive used by all navigation functions
 const navigate = (to = '/', opts = {}) => {
 	if (!canNavigate) return;
@@ -90,11 +94,26 @@ const navigate = (to = '/', opts = {}) => {
 	const route = routes.find(route => route.test(url.pathname));
 	if (!route) return console.log('No route matches the target', url.href);
 	const screen = getTopScreen();
+	const iExisting = stackStore.state.findIndex(screen => {
+		if (Object.keys(screen.queryParamStore.state).length) return; // Query params invalidate going "back"
+		return (screen.pathStore.state === url.pathname);
+	});
+	const isGoingUp = location.pathname !== url.pathname && (
+		url.pathname === '/' || location.pathname.startsWith(`${url.pathname}/`)
+	);
 
 	console.log('navigate:', route.name);
 
-	if (opts.replaceState && route === screen.route) {
-		console.log('> replacing state of top screen');
+	if (isGoingUp && iExisting === -1) {
+		console.log('> adding ancestor screen before top screen');
+		stackStore.update([
+			...stackStore.state.slice(0, indexStore.state),
+			new Screen(route, url, opts),
+			...stackStore.state.slice(indexStore.state),
+		]);
+		history.replaceState(ts, null, to);
+	} else if (opts.replaceState && route === screen.route) {
+		console.log('> replacing state of top screen, preserving original route');
 		screen.opts = opts;
 		screen.setRoute(route, url);
 		stackStore.update([
@@ -108,18 +127,15 @@ const navigate = (to = '/', opts = {}) => {
 		screen.setRoute(route, url); // Update existing screen
 	} else {
 		if (opts.replaceState) {
-			console.log('> replacing state of top screen');
+			console.log('> replacing state of top screen, creating new screen in the process');
 			stackStore.update([
 				...stackStore.state.slice(0, indexStore.state),
 				new Screen(route, url, opts),
 			]);
 			history.replaceState(ts, null, to);
 		} else {
-			const iExisting = stackStore.state.findIndex(screen => { // new route matches route in stack
-				if (Object.keys(screen.queryParamStore.state).length) return; // Query params invalidate going "back"
-				return (screen.pathStore.state === url.pathname);
-			});
 			if (iExisting > -1) { // let goBack handle the state change
+				console.log('> navigating to existing screen in stack');
 				stackStore.state[iExisting].setSearch(url); // can modify search params even in a back move
 
 				const steps = (indexStore.state - iExisting);
@@ -205,11 +221,10 @@ export const navigation = {
 		// open "http://localhost:3000/todo/QjQjd6xkjgFXcb9QF"
 		if (history.length === 1 || indexStore.state === 0) return navigation.goUp();
 
-		// This is an optimization to handle the backHandlers instead of in popstate
-		if (steps === 1 && handleBack()) return;
+		if (handleBack()) return;
 
-		// Finally, allow the actual back event
-		history.go(steps * -1);
+		indexStore.update(indexStore.state - steps);
+		history.go(-steps);
 	},
 };
 
