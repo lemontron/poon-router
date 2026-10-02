@@ -173,16 +173,25 @@ ignored. When the stack is empty, the browser's native Save Changes modal will b
 
 ## Handle Back
 
-``` javascript
-import { useBackHandler } from 'meteor/poon-router';
-```
-
 Register a callback that should run before normal one-step back navigation. This is useful for transient UI like alerts,
 menus, and sheets that should close when the user presses the browser or app back button.
 
 ``` javascript
-useBackHandler(isOpen, close);
+screen.useBackHandler(close, isOpen);
 ```
+
+The handler runs only when its screen is on top of the stack. The second argument defaults to `true`.
+Global overlays such as alerts and action sheets use the standalone hook and take precedence over screen handlers:
+
+``` javascript
+import { useBackHandler } from 'meteor/poon-router';
+
+useBackHandler(close, isOpen);
+```
+
+The most recently registered active callback in the applicable scope runs first. Return `true` to continue back
+navigation; any other result consumes the back action. Async callbacks are awaited, so a confirmation prompt can
+return `true` after approval.
 
 ## Bonus Utils
 

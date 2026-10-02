@@ -1,5 +1,6 @@
 import { createBus, parsePathParams, parseQueryString, useBus } from './util';
 import { Random } from 'meteor/random';
+import { useBackHandler } from './back-handler';
 
 const parseParam = (p, key, fallback) => {
 	if (typeof fallback === 'function') return fallback(p[key]);
@@ -38,6 +39,8 @@ export class Screen {
 	usePath = () => {
 		return useBus(this.pathStore);
 	};
+
+	useBackHandler = (callback, isActive = true) => useBackHandler(callback, isActive, this);
 
 	setSearch(url) {
 		this.pathStore.update(url.pathname + url.search);

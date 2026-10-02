@@ -2,18 +2,20 @@ import { createElement, memo, useEffect } from 'react';
 import { createBus, encodeSearchString, useBus } from './util';
 import { Route } from './route';
 import { Screen } from './screen';
+import { backHandlers } from './back-handler';
 
 export * from './util';
+export { useBackHandler } from './back-handler';
 
 let canNavigate = true; // Internal flag to prevent navigation
 let ts = history.state || Date.now(); // Used to detect back/forward
 let restorePopstate = false;
+let backHandled = false;
 
 history.scrollRestoration = 'manual';
 
 const stackStore = createBus([]);
 const indexStore = createBus(0);
-const backHandlers = []; // Registry of back handlers
 const routes = []; // Definitions stored here
 
 export const defineRoute = (name, path, component, type = 'main') => {
@@ -30,14 +32,16 @@ export const defineRoute = (name, path, component, type = 'main') => {
 // Gets screen on the top of the stack
 const getTopScreen = () => stackStore.state[indexStore.state];
 
-const handleBack = () => {
-	if (backHandlers.length === 0) return false;
-	backHandlers[backHandlers.length - 1]();
-	return true;
+const handleBack = async () => {
+	const handlers = backHandlers.slice().reverse();
+	const handler = handlers.find(handler => handler.screen === null)
+		|| handlers.find(handler => handler.screen === getTopScreen());
+	if (!handler) return false;
+	return await handler.callback() !== true;
 };
 
 // User navigates with the browser (out of our control)
-window.onpopstate = () => {
+window.onpopstate = async () => {
 	const dir = Math.sign(history.state - ts); // this is the only way to detect which direction, lol!!!
 	ts = history.state; // sync
 
@@ -47,11 +51,12 @@ window.onpopstate = () => {
 	}
 
 	// Back handlers take precedence over route changes
-	if (dir < 0 && handleBack()) {
+	if (dir < 0 && !backHandled && await handleBack()) {
 		restorePopstate = true;
 		history.go(1);
 		return;
 	}
+	backHandled = false;
 
 	const route = routes.find(route => route.test(location.pathname));
 	const currentScreen = getTopScreen();
@@ -81,9 +86,9 @@ window.onpopstate = () => {
 
 if (!history.state) history.replaceState(ts, null);
 
-stackStore.on(stack => {
-	console.log('STACK:', stack.map(r => r.pathNameStore.state));
-});
+// stackStore.on(stack => {
+// 	console.log('STACK:', stack.map(r => r.pathNameStore.state));
+// });
 
 // Navigation primitive used by all navigation functions
 const navigate = (to = '/', opts = {}) => {
@@ -181,18 +186,6 @@ export const useUnsavedChanges = (active) => {
 	}, [active]);
 };
 
-// When active, registers a back handler callback, and uses pushState to immediately restore location
-export const useBackHandler = (active, callback) => {
-	useEffect(() => {
-		if (!active) return;
-		backHandlers.push(callback);
-		return () => {
-			const i = backHandlers.indexOf(callback);
-			if (i > -1) backHandlers.splice(i, 1);
-		};
-	}, [active, callback]);
-};
-
 // Navigation events always apply to the top screen
 export const navigation = {
 	go(target, params = {}, queryParams = {}, opts = {}) {
@@ -211,8 +204,9 @@ export const navigation = {
 		const target = location.pathname.split('/').slice(0, -1).join('/') || '/';
 		navigate(target, {'replaceState': true, 'scrollToTop': true});
 	},
-	goBack(steps = 1) {
+	async goBack(steps = 1) {
 		if (!canNavigate) return;
+		if (await handleBack()) return;
 
 		// console.log('[goBack]', 'indexStore=', indexStore.state, 'history.length=', history.length);
 
@@ -221,8 +215,7 @@ export const navigation = {
 		// open "http://localhost:3000/todo/QjQjd6xkjgFXcb9QF"
 		if (history.length === 1 || indexStore.state === 0) return navigation.goUp();
 
-		if (handleBack()) return;
-
+		backHandled = true;
 		indexStore.update(indexStore.state - steps);
 		history.go(-steps);
 	},
