@@ -217,7 +217,10 @@ export const navigation = {
 
 		backHandled = true;
 		indexStore.update(indexStore.state - steps);
-		history.go(-steps);
+		return new Promise(resolve => {
+			window.addEventListener('popstate', resolve, {once: true});
+			history.go(-steps);
+		});
 	},
 };
 

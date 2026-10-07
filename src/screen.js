@@ -1,6 +1,7 @@
 import { createBus, parsePathParams, parseQueryString, useBus } from './util';
 import { Random } from 'meteor/random';
 import { useBackHandler } from './back-handler';
+import { useScreen } from './index';
 
 const parseParam = (p, key, fallback) => {
 	if (typeof fallback === 'function') return fallback(p[key]);
@@ -39,6 +40,8 @@ export class Screen {
 	usePath = () => {
 		return useBus(this.pathStore);
 	};
+
+	useFocus = () => useScreen() === this;
 
 	useBackHandler = (callback, isActive = true) => useBackHandler(callback, isActive, this);
 

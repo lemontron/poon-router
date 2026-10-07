@@ -142,6 +142,7 @@ const UserProfile = ({screen, isVisible, animateIn}) => {
 - `screen.useQueryParam(key, defaultValue)`  Returns a query param from the URL
 - `screen.useRouteName()` Returns the name *(String)* of the currently presented route.
 - `screen.usePath()` Returns the path *(String)* of the currently presented route.
+- `screen.useFocus()` Returns whether this screen is currently on top of the stack, updating as you navigate.
 
 ## Create Link
 
